@@ -288,7 +288,7 @@
     },
     {
       "code": "CAVE",
-      "pattern": "LLM-HHM-MLM-MHM-LLM",
+      "pattern": "LLM-HHM-LLM-MHM-LLM",
       "cn": "洞穴自闭体",
       "tags": [
         "社交耗电极快",

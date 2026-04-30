@@ -20,7 +20,7 @@
       "H": 3
     },
     "maxDistance": 30,
-    "fallbackThreshold": 61
+    "fallbackThreshold": 55
   },
   "display": {
     "title": "FFTI 发疯人格测试",
