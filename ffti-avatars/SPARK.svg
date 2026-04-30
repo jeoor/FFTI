@@ -1,7 +1,7 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
   <circle cx="100" cy="100" r="96" fill="#FFEAC4"/>
   <circle cx="100" cy="100" r="96" fill="none" stroke="#F59E0B" stroke-width="6" opacity="0.22"/>
-  <circle cx="100" cy="100" r="74" fill="rgba(255,255,255,0.34)"/>
+  <circle cx="100" cy="100" r="74" fill="rgba(255,255,255,0.62)"/>
   <path d="M100 26 L107 44 L126 44 L111 56 L117 74 L100 63 L83 74 L89 56 L74 44 L93 44 Z" fill="#F59E0B" opacity="0.32"/>
   
     <g>

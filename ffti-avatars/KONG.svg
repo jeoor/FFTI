@@ -1,8 +1,8 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
-  <circle cx="100" cy="100" r="96" fill="#E7EDF5"/>
-  <circle cx="100" cy="100" r="96" fill="none" stroke="#6B7A90" stroke-width="6" opacity="0.22"/>
-  <circle cx="100" cy="100" r="74" fill="rgba(255,255,255,0.34)"/>
-  <g opacity="0.24"><rect x="136" y="40" width="30" height="38" rx="8" fill="#6B7A90"/><circle cx="151" cy="58" r="8" fill="white"/><path d="M146 40 l4-8 h2 l4 8" stroke="#6B7A90" stroke-width="4" fill="none" stroke-linecap="round"/></g>
+  <circle cx="100" cy="100" r="96" fill="#E5EAF2"/>
+  <circle cx="100" cy="100" r="96" fill="none" stroke="#607487" stroke-width="6" opacity="0.22"/>
+  <circle cx="100" cy="100" r="74" fill="rgba(255,255,255,0.62)"/>
+  <g opacity="0.42"><rect x="136" y="40" width="30" height="38" rx="8" fill="#607487"/><rect x="142" y="48" width="18" height="4" rx="2" fill="white"/><rect x="142" y="56" width="14" height="4" rx="2" fill="white"/><circle cx="151" cy="68" r="5" fill="white" opacity="0.92"/></g>
   
     <g>
       <rect x="66" y="114" width="68" height="48" rx="24" fill="#FFFDF8" stroke="#1C2F4A" stroke-width="6"/>
@@ -13,7 +13,7 @@
         <circle cx="110" cy="82" r="3" fill="#1C2F4A"/>
         <line x1="92" y1="94" x2="108" y2="94" stroke="#1C2F4A" stroke-width="3" stroke-linecap="round"/>
         
-      <circle cx="100" cy="136" r="10" fill="white" stroke="#6B7A90" stroke-width="5"/>
+      <g opacity="0.95"><rect x="86" y="128" width="28" height="18" rx="6" fill="white" stroke="#607487" stroke-width="4"/><rect x="94" y="134" width="12" height="4" rx="2" fill="#607487"/><circle cx="110" cy="136" r="2.4" fill="#607487" opacity="0.35"/></g>
     </g>
     
 </svg>

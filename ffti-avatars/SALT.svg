@@ -1,8 +1,8 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
-  <circle cx="100" cy="100" r="96" fill="#DCEAF8"/>
-  <circle cx="100" cy="100" r="96" fill="none" stroke="#3B82F6" stroke-width="6" opacity="0.22"/>
-  <circle cx="100" cy="100" r="74" fill="rgba(255,255,255,0.34)"/>
-  <g opacity="0.24"><path d="M140 38 h18 a6 6 0 0 1 6 6 v18 a12 12 0 0 1-12 12 h-6 a12 12 0 0 1-12-12 V44 a6 6 0 0 1 6-6 z" fill="#3B82F6"/><path d="M150 34 l10 12" stroke="#3B82F6" stroke-width="4" stroke-linecap="round"/><circle cx="148" cy="54" r="2" fill="white"/><circle cx="154" cy="50" r="2" fill="white"/><circle cx="158" cy="58" r="2" fill="white"/></g>
+  <circle cx="100" cy="100" r="96" fill="#E4EEF9"/>
+  <circle cx="100" cy="100" r="96" fill="none" stroke="#4A79C9" stroke-width="6" opacity="0.22"/>
+  <circle cx="100" cy="100" r="74" fill="rgba(255,255,255,0.62)"/>
+  <g opacity="0.42"><path d="M136 38 h22 l4 10 v14 a12 12 0 0 1-12 12 h-6 a12 12 0 0 1-12-12 V48 z" fill="#4A79C9"/><path d="M139 48 h18" stroke="white" stroke-width="4" stroke-linecap="round"/><circle cx="144" cy="56" r="2.2" fill="white"/><circle cx="152" cy="56" r="2.2" fill="white"/><circle cx="148" cy="63" r="2.2" fill="white"/></g>
   
     <g>
       <rect x="66" y="114" width="68" height="48" rx="24" fill="#FFFDF8" stroke="#1C2F4A" stroke-width="6"/>
@@ -13,7 +13,7 @@
         <circle cx="110" cy="82" r="2.6" fill="#1C2F4A"/>
         <path d="M94 94 Q100 90 106 94" stroke="#1C2F4A" stroke-width="3" fill="none" stroke-linecap="round"/>
         
-      
+      <g opacity="0.94"><rect x="89" y="130" width="22" height="16" rx="6" fill="white" stroke="#4A79C9" stroke-width="4"/><circle cx="95" cy="138" r="2" fill="#4A79C9"/><circle cx="100" cy="138" r="2" fill="#4A79C9"/><circle cx="105" cy="138" r="2" fill="#4A79C9"/></g>
     </g>
     
 </svg>

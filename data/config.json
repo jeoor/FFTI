@@ -20,18 +20,31 @@
       "H": 3
     },
     "maxDistance": 30,
-    "fallbackThreshold": 60
+    "fallbackThreshold": 61
   },
   "display": {
-    "title": "SBTI 人格测试",
-    "subtitle": "MBTI已经过时，SBTI来了。",
-    "author": "B站UP主@蛆肉儿串儿 原创",
-    "funNote": "本测试仅供娱乐，别拿它当诊断、面试、相亲、分手、招魂、算命或人生判决书。",
-    "funNoteSpecial": "本测试仅供娱乐。隐藏人格和傻乐兜底都属于作者故意埋的损招，请勿把它当成医学、心理学、相学、命理学或灵异学依据。"
+    "title": "FFTI 发疯人格测试",
+    "subtitle": "用科学测量你的不科学。",
+    "author": "把情绪、习惯和崩溃方式，装进一张看起来很科学的图里。",
+    "funNote": "本测试仅供娱乐，结果不代表任何科学意义。请勿过度解读或当真，保持理性和幽默的态度看待测试结果。",
+    "funNoteSpecial": "本测试仅供娱乐。隐藏人格属于作者故意埋的损招，如果你触发了，说明你已经被测试玩坏了，恭喜你！",
+    "shareLink": "https://fun.kayro.cn/ffti/"
   },
-  "drinkGate": {
-    "questionId": "drink_gate_q1",
-    "triggerValue": 3,
-    "drunkTriggerValue": 2
+  "hiddenQuestions": {
+    "QH1": {
+      "trigger": "R1+R2+R3均为H",
+      "specialType": "LOOP404",
+      "condition": "选C 且 R1/R2/R3中至少2个为H"
+    },
+    "QH2": {
+      "trigger": "S1+S2+S3均为H 且 E1为H",
+      "specialType": "GONE",
+      "condition": "选C"
+    },
+    "QH3": {
+      "trigger": "15维无明显高点（无维度≥5）",
+      "specialType": "NULL",
+      "condition": "选C 且 最佳匹配相似度<55%"
+    }
   }
 }

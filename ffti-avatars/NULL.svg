@@ -1,8 +1,8 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
   <circle cx="100" cy="100" r="96" fill="#E6E8ED"/>
   <circle cx="100" cy="100" r="96" fill="none" stroke="#6B7280" stroke-width="6" opacity="0.22"/>
-  <circle cx="100" cy="100" r="74" fill="rgba(255,255,255,0.34)"/>
-  <g opacity="0.24"><path d="M134 44 h24 l8 8 v24 h-32 z" fill="#6B7280"/><path d="M140 70 l20-20 M140 50 h20 M160 70 h-20" stroke="white" stroke-width="4" stroke-linecap="round"/></g>
+  <circle cx="100" cy="100" r="74" fill="rgba(255,255,255,0.62)"/>
+  <g opacity="0.42"><path d="M134 42 h22 l8 8 v26 h-30 z" fill="#6B7280"/><path d="M156 42 v10 h10" stroke="white" stroke-width="3.5" fill="none" stroke-linecap="round"/><circle cx="149" cy="62" r="6.5" fill="none" stroke="white" stroke-width="3.5"/><path d="M145 66 l8-8" stroke="white" stroke-width="3.5" stroke-linecap="round"/></g>
   
     <g>
       <rect x="66" y="114" width="68" height="48" rx="24" fill="#FFFDF8" stroke="#1C2F4A" stroke-width="6"/>
@@ -13,7 +13,7 @@
         <circle cx="110" cy="82" r="3" fill="#1C2F4A"/>
         <line x1="92" y1="94" x2="108" y2="94" stroke="#1C2F4A" stroke-width="3" stroke-linecap="round"/>
         
-      
+      <g opacity="0.94"><circle cx="100" cy="138" r="12" fill="white" stroke="#6B7280" stroke-width="4"/><circle cx="100" cy="138" r="5.5" fill="none" stroke="#6B7280" stroke-width="3.5"/><path d="M96 142 l8-8" stroke="#6B7280" stroke-width="3.5" stroke-linecap="round"/></g>
     </g>
     
 </svg>

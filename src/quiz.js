@@ -1,67 +1,78 @@
-import { shuffle, insertAtRandom, insertAfter } from './utils.js'
+import { shuffle } from './utils.js'
 
 /**
- * 答题控制器
+ * FFTI 答题控制器
+ * @param {Array}   questions      { main: [...], hidden: [...] }
+ * @param {Object}  config         评分配置
+ * @param {Function} onComplete    (answers, hiddenAnswers) => void
+ * @param {Function} checkTriggers (scores, levels, dimOrder) => string[] — 返回需触发的隐藏题ID
+ * @param {Array}   dimOrder       维度顺序
+ * @param {Object}  thresholds     等级阈值
  */
-export function createQuiz(questions, config, onComplete) {
-  const mainQuestions = shuffle(questions.main)
-  const drinkGateQ1 = questions.special.find((q) => q.id === config.drinkGate.questionId)
-  const drinkGateQ2 = questions.special.find((q) => q.id === 'drink_gate_q2')
-
-  let queue = insertAtRandom(mainQuestions, drinkGateQ1)
+export function createQuiz(questions, config, onComplete, checkTriggers, dimOrder, thresholds, questionCounts = {}) {
+  let queue = shuffle([...questions.main])
   let current = 0
   let answers = {}
-  let isDrunk = false
+  let hiddenAnswers = {}
 
   const els = {
     fill: document.getElementById('progress-fill'),
     text: document.getElementById('progress-text'),
     qText: document.getElementById('question-text'),
+    qNum: document.getElementById('question-number'),
     options: document.getElementById('options'),
   }
 
-  function totalCount() {
-    return queue.length
-  }
-
   function updateProgress() {
-    const pct = (current / totalCount()) * 100
+    const pct = (current / queue.length) * 100
     els.fill.style.width = pct + '%'
-    els.text.textContent = `${current} / ${totalCount()}`
+    els.text.textContent = `${current} / ${queue.length}`
   }
 
   function renderQuestion() {
     const q = queue[current]
+    const isHidden = q.id.startsWith('qh')
+    if (els.qNum) els.qNum.textContent = isHidden ? '隐藏题' : `第 ${current + 1} 题`
     els.qText.textContent = q.text
-
     els.options.innerHTML = ''
     q.options.forEach((opt) => {
-      const btn = document.createElement('button')
+      const btn = document.createElement('button'); btn.type = 'button'
       btn.className = 'btn btn-option'
       btn.textContent = opt.label
-      btn.addEventListener('click', () => selectOption(q, opt))
+      btn.addEventListener('click', () => { btn.blur(); btn.classList.add('pressing'); setTimeout(() => selectOption(q, opt), 180) })
       els.options.appendChild(btn)
     })
-
     updateProgress()
   }
 
   function selectOption(question, option) {
-    answers[question.id] = option.value
-
-    // 酒鬼门：如果选了"饮酒"，插入追问
-    if (question.id === config.drinkGate.questionId && option.value === config.drinkGate.triggerValue) {
-      queue = insertAfter(queue, question.id, drinkGateQ2)
-    }
-
-    // 酒鬼检测
-    if (question.id === 'drink_gate_q2' && option.value === config.drinkGate.drunkTriggerValue) {
-      isDrunk = true
+    if (question.id.startsWith('qh')) {
+      hiddenAnswers[question.id] = option.value
+    } else {
+      answers[question.id] = option.value
     }
 
     current++
-    if (current >= totalCount()) {
-      onComplete(answers, isDrunk)
+
+    if (current >= queue.length) {
+      // 当前队列答完，检查是否需要插入隐藏题
+      const allA = { ...answers, ...hiddenAnswers }
+      const scores = calcScoresLocal(allA, questions.main)
+      const levels = calcLevelsLocal(scores, thresholds, questionCounts)
+      const hiddenIds = checkTriggers(scores, levels, dimOrder)
+
+      const newHidden = hiddenIds
+        .filter((id) => !queue.some((q) => q.id === id))
+        .map((id) => questions.hidden.find((q) => q.id === id))
+        .filter(Boolean)
+
+      if (newHidden.length > 0) {
+        queue = [...queue, ...newHidden]
+        renderQuestion()
+        return
+      }
+
+      onComplete(answers, hiddenAnswers)
     } else {
       renderQuestion()
     }
@@ -70,10 +81,34 @@ export function createQuiz(questions, config, onComplete) {
   function start() {
     current = 0
     answers = {}
-    isDrunk = false
-    queue = insertAtRandom(shuffle(questions.main), drinkGateQ1)
+    hiddenAnswers = {}
+    queue = shuffle([...questions.main])
     renderQuestion()
   }
 
-  return { start, renderQuestion }
+  return { start }
+}
+
+// 本地分值计算（避免循环依赖 engine.js）
+function calcScoresLocal(answers, questions) {
+  const scores = {}
+  for (const q of questions) {
+    if (answers[q.id] == null) continue
+    scores[q.dim] = (scores[q.dim] || 0) + answers[q.id]
+  }
+  return scores
+}
+
+function calcLevelsLocal(scores, thresholds, questionCounts) {
+  const levels = {}
+  for (const [dim, score] of Object.entries(scores)) {
+    const questionCount = questionCounts[dim] || 2
+    const averageScore = score / questionCount
+    const lowMax = thresholds.L[1] / 2
+    const highMin = thresholds.H[0] / 2
+    if (averageScore <= lowMax) levels[dim] = 'L'
+    else if (averageScore >= highMin) levels[dim] = 'H'
+    else levels[dim] = 'M'
+  }
+  return levels
 }

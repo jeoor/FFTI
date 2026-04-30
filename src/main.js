@@ -1,4 +1,4 @@
-import { calcDimensionScores, scoresToLevels, determineResult } from './engine.js'
+import { calcDimensionScores, countQuestionsByDimension, scoresToLevels, checkHiddenTriggers, determineResult } from './engine.js'
 import { createQuiz } from './quiz.js'
 import { renderResult } from './result.js'
 import './style.css'
@@ -16,6 +16,18 @@ async function init() {
     loadJSON(new URL('../data/config.json', import.meta.url).href),
   ])
 
+  const { order: dimOrder, definitions: dimDefs } = dimensions
+  const { standard: standardTypes, special: specialTypes } = types
+  const thresholds = config.scoring.levelThresholds
+  const questionCounts = countQuestionsByDimension(questions.main)
+  const introModelCopy = {
+    E: '情绪怎么炸',
+    R: '内耗怎么转',
+    D: '发言怎么拐',
+    S: '日常怎么活',
+    X: '人格怎么切',
+  }
+
   const pages = {
     intro: document.getElementById('page-intro'),
     quiz: document.getElementById('page-quiz'),
@@ -28,24 +40,60 @@ async function init() {
     window.scrollTo(0, 0)
   }
 
-  function onQuizComplete(answers, isDrunk) {
-    const scores = calcDimensionScores(answers, questions.main)
-    const levels = scoresToLevels(scores, config.scoring.levelThresholds)
-    const result = determineResult(levels, dimensions.order, types.standard, types.special, { isDrunk })
-    renderResult(result, levels, dimensions.order, dimensions.definitions, config)
+  function renderIntroOverview() {
+    const summaryEl = document.getElementById('intro-summary')
+    const modelsEl = document.getElementById('intro-models')
+    if (summaryEl) {
+      summaryEl.textContent = `${dimOrder.length} 维画像 · ${questions.main.length} 道主问题 · ${questions.hidden.length} 个隐藏结果`
+    }
+    if (modelsEl) {
+      modelsEl.innerHTML = Object.entries(dimensions.models).map(([key, model]) => `
+        <span class="intro-model-chip">
+          <span class="intro-chip-code">${key}</span>
+          <span class="intro-chip-text">${model.cn.replace('模型', '')} · ${introModelCopy[key] || model.desc}</span>
+        </span>
+      `).join('')
+    }
+  }
+
+  function onQuizComplete(answers, hiddenAnswers) {
+    const allAnswers = { ...answers, ...hiddenAnswers }
+    const scores = calcDimensionScores(allAnswers, questions.main)
+    const levels = scoresToLevels(scores, thresholds, questionCounts)
+    const result = determineResult(levels, dimOrder, standardTypes, specialTypes, {
+      hiddenAnswers,
+      levels,
+      fallbackThreshold: config.scoring.fallbackThreshold,
+    })
+    renderResult(result, levels, dimOrder, dimDefs, config)
     showPage('result')
   }
 
-  const quiz = createQuiz(questions, config, onQuizComplete)
+  const quiz = createQuiz(questions, config, onQuizComplete, checkHiddenTriggers, dimOrder, thresholds, questionCounts)
+  renderIntroOverview()
 
-  document.getElementById('btn-start').addEventListener('click', () => {
-    quiz.start()
-    showPage('quiz')
+  // unified touch feedback — all buttons
+  document.addEventListener('touchstart', (e) => {
+    const btn = e.target.closest('.btn')
+    if (btn) btn.classList.add('pressing')
+  }, { passive: true })
+  document.addEventListener('touchend', () => {
+    document.querySelectorAll('.btn.pressing').forEach(b => b.classList.remove('pressing'))
   })
 
-  document.getElementById('btn-restart').addEventListener('click', () => {
+  // start/restart need extra hold before page transition kills the button
+  const btnStart = document.getElementById('btn-start')
+  btnStart.addEventListener('click', () => {
+    btnStart.classList.add('pressing')
     quiz.start()
-    showPage('quiz')
+    setTimeout(() => { btnStart.classList.remove('pressing'); showPage('quiz') }, 150)
+  })
+
+  const btnRestart = document.getElementById('btn-restart')
+  btnRestart.addEventListener('click', () => {
+    btnRestart.classList.add('pressing')
+    quiz.start()
+    setTimeout(() => { btnRestart.classList.remove('pressing'); showPage('quiz') }, 150)
   })
 }
 

@@ -1,73 +1,96 @@
-# SBTI 人格测试
+# FFTI — 发疯人格类型指标
 
-> MBTI已经过时，SBTI来了。
+> 用科学测量你的不科学。
 
-一个开源的娱乐性人格测试项目，基于 B站UP主 [@蛆肉儿串儿](https://space.bilibili.com/417038183) 的原创测试。
+一个纯前端人格测试 web app，基于 15 维度 × 5 模型的向量匹配算法，覆盖 25 种标准人格 + 3 种隐藏人格。
 
 ## 在线体验
 
-👉 [点击开始测试](https://pingfanfan.github.io/SBTI/)
+👉 [https://fun.kayro.cn/ffti/](https://fun.kayro.cn/ffti/)
 
 ## 特性
 
-- 🧠 **27种人格类型** — 25种标准类型 + 2种隐藏/兜底类型
-- 📊 **15个评估维度** — 自我、情感、态度、行动、社交五大模型
-- 🎯 **曼哈顿距离匹配** — 基于15维向量的科学匹配算法
-- 🍺 **隐藏彩蛋** — 酒鬼人格触发机制
-- 📱 **移动端优先** — 响应式设计，手机体验友好
-- 🔧 **易于定制** — 数据与代码分离，改 JSON 即可创建你自己的测试
-
-## 项目结构
-
-```
-├── data/                    # 测试数据（修改这里来定制）
-│   ├── questions.json       # 题目和选项
-│   ├── dimensions.json      # 15个维度定义
-│   ├── types.json           # 人格类型和匹配模式
-│   └── config.json          # 评分参数和显示配置
-├── src/                     # 源代码
-│   ├── engine.js            # 评分算法（纯函数）
-│   ├── quiz.js              # 答题流程控制
-│   ├── result.js            # 结果页渲染
-│   ├── chart.js             # 雷达图（Canvas API）
-│   ├── utils.js             # 工具函数
-│   ├── main.js              # 入口
-│   └── style.css            # 样式（CSS变量主题化）
-├── docs/
-│   └── analysis.md          # 数据分析报告
-└── index.html
-```
+- **28 种人格类型** — 25 标准 + 3 隐藏（LOOP404 / GONE / NULL）
+- **15 维画像** — 爆发(E) / 内耗(R) / 解构(D) / 生存(S) / 身份(X) 五大模型
+- **曼哈顿距离匹配** — 15 维 L/M/H 向量，相似度排序
+- **隐藏题触发** — 满足维度条件自动插入隐藏题，选 C 解锁特殊人格
+- **Canvas 分享图** — 一键生成带雷达图、头像、二维码的结果海报
+- **28 个 SVG 头像** — 每种人格独立设计
+- **移动端优先** — 响应式 + 触摸动效 + `prefers-reduced-motion` 适配
 
 ## 快速开始
 
 ```bash
-# 克隆项目
-git clone https://github.com/pingfanfan/SBTI.git
+git clone https://github.com/jeoor/FFTI.git
 cd SBTI
-
-# 安装依赖
 npm install
-
-# 启动开发服务器
 npm run dev
-
-# 构建生产版本
-npm run build
 ```
 
-## 定制你自己的测试
+```bash
+npm run build      # 产物在 dist/
+npm run preview    # 预览构建结果
+```
 
-所有测试内容都在 `data/` 目录下，修改 JSON 文件即可定制，无需改动代码。
+## 项目结构
 
-### 修改题目
+```
+├── data/
+│   ├── questions.json       # 32 主题 + 3 隐藏题
+│   ├── dimensions.json      # 15 维度定义 + 模型元数据
+│   ├── types.json           # 25 标准 + 3 特殊人格
+│   └── config.json          # 阈值、文案、触发配置
+├── src/
+│   ├── main.js              # 入口：加载数据、页面切换、事件绑定
+│   ├── engine.js            # 纯函数：评分、匹配、隐藏触发
+│   ├── quiz.js              # 答题流程：队列、进度、隐藏题插入
+│   ├── result.js            # 结果页渲染
+│   ├── chart.js             # Canvas 雷达图
+│   ├── share.js             # Canvas 分享图生成
+│   ├── avatar.js            # 头像 URL 解析
+│   ├── style.css            # 设计系统（CSS 变量 + 动效）
+│   └── utils.js             # shuffle 等工具函数
+├── ffti-avatars/            # 28 个 SVG 人格头像
+├── index.html
+└── vite.config.js
+```
 
-编辑 `data/questions.json`，每道题的结构：
+## 核心算法
+
+### 评分
+
+1. 每题 3 选项：A=1, B=2, C=3
+2. 每维度 2-3 题，求和得原始分（范围 2-9）
+3. 按均值分级：avg ≤ 1.5 → L，1.5 < avg < 2.5 → M，avg ≥ 2.5 → H
+
+### 匹配
+
+1. 用户 15 维 L/M/H → 数值向量 (L=1, M=2, H=3)
+2. 与每种人格 pattern 做曼哈顿距离：`distance = Σ|user[i] - type[i]|`
+3. `similarity = max(0, round((1 - distance/30) * 100))`
+4. 排序：distance ASC → exact DESC → similarity DESC
+
+### 隐藏人格触发
+
+| 人格 | 出现条件 | 解锁条件 |
+|------|----------|----------|
+| LOOP404 | R1/R2/R3 全 H | QH1 选 C，且 R1/R2/R3 ≥ 2 个 H |
+| GONE | S1/S2/S3 全 H 且 E1 H | QH2 选 C，且 S1/S2 ≥ 1 个 H |
+| NULL | 15 维无 H | QH3 选 C，且最佳匹配相似度 < 55% |
+
+## 定制
+
+所有测试内容在 `data/` 目录，改 JSON 即可，无需改代码。
+
+### 改题目
+
+编辑 `data/questions.json`：
 
 ```json
 {
   "id": "q1",
-  "dim": "S1",
-  "text": "你的题目文字",
+  "dim": "E1",
+  "text": "你的题目",
   "options": [
     { "label": "选项A", "value": 1 },
     { "label": "选项B", "value": 2 },
@@ -76,94 +99,35 @@ npm run build
 }
 ```
 
-- `dim` 指定该题属于哪个维度
-- `value` 分值：1=低, 2=中, 3=高
-- 每个维度需要恰好2道题
+### 加人格
 
-### 添加新人格类型
+编辑 `data/types.json` → `standard` 数组。`pattern` 必须是 15 个 L/M/H，按 `E1-E3|R1-R3|D1-D3|S1-S3|X1-X3` 排列。
 
-编辑 `data/types.json`，在 `standard` 数组中添加：
+### 改阈值
 
-```json
-{
-  "code": "YOUR",
-  "pattern": "HHH-HMH-MHH-HHH-MHM",
-  "cn": "你的类型名",
-  "intro": "一句话简介",
-  "desc": "详细描述..."
-}
-```
-
-`pattern` 是15个字母的L/M/H组合（按维度顺序：S1-S3, E1-E3, A1-A3, Ac1-Ac3, So1-So3），用 `-` 分隔每个模型。
-
-### 调整评分参数
-
-编辑 `data/config.json`：
-
-```json
-{
-  "scoring": {
-    "levelThresholds": { "L": [2, 3], "M": [4, 4], "H": [5, 6] },
-    "fallbackThreshold": 60
-  }
-}
-```
-
-### 修改主题样式
-
-编辑 `src/style.css` 顶部的 CSS 变量：
-
-```css
-:root {
-  --bg: #f0f4f1;
-  --accent: #4c6752;
-  /* ... */
-}
-```
-
-## 评分算法
-
-1. **求和**：每维度2题分值相加（范围2-6）
-2. **分级**：≤3 → L（低），4 → M（中），≥5 → H（高）
-3. **向量化**：L=1, M=2, H=3，生成15维数值向量
-4. **匹配**：计算用户向量与每种类型的曼哈顿距离
-5. **排名**：距离升序 → 精准命中降序 → 相似度降序
-6. **特殊覆盖**：酒鬼彩蛋 > 正常匹配 > 傻乐者兜底（<60%）
-
-详见 [数据分析报告](docs/analysis.md)。
+编辑 `data/config.json` → `scoring.levelThresholds`。
 
 ## 部署
 
-### GitHub Pages（推荐）
-
-Fork 本项目后，在 Settings → Pages → Source 选择 GitHub Actions 即可自动部署。
-
-### Vercel / Netlify
-
-直接连接 GitHub 仓库，零配置自动识别 Vite 项目。
-
-### 手动部署
+构建产物是纯静态文件，`dist/` 可部署到任何静态服务器。
 
 ```bash
 npm run build
-# 将 dist/ 目录部署到任何静态服务器
+# dist/ → GitHub Pages / Vercel / Netlify / 任何 HTTP 服务器
 ```
+
+资源路径使用相对路径 (`./`)，放到任意子目录均可运行。
 
 ## 技术栈
 
-- [Vite](https://vitejs.dev/) — 构建工具
-- 原生 JavaScript — 无框架依赖
-- Canvas API — 雷达图渲染
-- CSS Custom Properties — 主题化
+- [Vite](https://vitejs.dev/) — 构建
+- Vanilla JS — 无框架依赖
+- Canvas API — 雷达图 + 分享图
+- CSS Custom Properties — 设计系统
 
 ## 致谢
 
-- 原创测试：B站UP主 [@蛆肉儿串儿](https://space.bilibili.com/417038183)（UID: 417038183）
-- 原版地址：[B站SBTI测试页面](https://www.bilibili.com/blackboard/era/VxiCX2CRqcqzPK9F.html)
-
-## 声明
-
-本测试仅供娱乐，请勿用于任何严肃场景。本项目为开源二创，如有侵权请联系删除。
+原创测试设计：B站UP主 [@蛆肉儿串儿](https://space.bilibili.com/417038183)
 
 ## License
 
