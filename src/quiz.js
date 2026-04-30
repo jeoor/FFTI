@@ -14,8 +14,6 @@ export function createQuiz(questions, config, onComplete, checkTriggers, dimOrde
   let current = 0
   let answers = {}
   let hiddenAnswers = {}
-  let selecting = false
-
   const els = {
     fill: document.getElementById('progress-fill'),
     text: document.getElementById('progress-text'),
@@ -44,18 +42,12 @@ export function createQuiz(questions, config, onComplete, checkTriggers, dimOrde
     els.qText.textContent = q.text
     els.options.innerHTML = ''
     const savedVal = isHidden ? hiddenAnswers[q.id] : answers[q.id]
-    selecting = false
     q.options.forEach((opt) => {
       const btn = document.createElement('button'); btn.type = 'button'
       btn.className = 'btn btn-option'
       btn.textContent = opt.label
       if (savedVal != null && opt.value === savedVal) btn.classList.add('selected')
-      btn.addEventListener('click', () => {
-        if (selecting) return
-        selecting = true
-        btn.blur(); btn.classList.add('pressing')
-        setTimeout(() => selectOption(q, opt), 180)
-      })
+      btn.addEventListener('click', () => selectOption(q, opt))
       els.options.appendChild(btn)
     })
     updateProgress()
@@ -180,7 +172,6 @@ export function createQuiz(questions, config, onComplete, checkTriggers, dimOrde
     current = 0
     answers = {}
     hiddenAnswers = {}
-    selecting = false
     queue = shuffle([...questions.main])
     renderQuestion()
   }
