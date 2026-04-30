@@ -68,16 +68,22 @@ export function createQuiz(questions, config, onComplete, checkTriggers, dimOrde
     let html = ''
     for (let i = 0; i < mainCount; i++) {
       const answered = answers[queue[i].id] != null
-      const cls = i === current ? 'qdot active' : answered ? 'qdot answered' : 'qdot'
-      html += `<button type="button" class="${cls}" data-idx="${i}">${i + 1}</button>`
+      const isCurrent = i === current
+      const clickable = isCurrent || answered
+      const cls = isCurrent ? 'qdot active' : answered ? 'qdot answered' : 'qdot disabled'
+      html += `<button type="button" class="${cls}" data-idx="${i}"${clickable ? '' : ' disabled'}>${i + 1}</button>`
     }
+    const allDone = countAnswered() >= questions.main.length
+    const doneHtml = allDone ? '<button type="button" class="btn btn-primary btn-nav-done" id="btn-done">完成测试 →</button>' : ''
     const backHtml = current > 0 ? '<button type="button" class="btn btn-nav-back" id="btn-back">← 上一题</button>' : ''
-    els.nav.innerHTML = `<div class="nav-dots">${html}</div>${backHtml}`
-    els.nav.querySelectorAll('.qdot').forEach(dot => {
+    els.nav.innerHTML = `<div class="nav-dots">${html}</div>${doneHtml}${backHtml}`
+    els.nav.querySelectorAll('.qdot:not([disabled])').forEach(dot => {
       dot.addEventListener('click', () => goTo(Number(dot.dataset.idx)))
     })
     const backBtn = els.nav.querySelector('#btn-back')
     if (backBtn) backBtn.addEventListener('click', goBack)
+    const doneBtn = els.nav.querySelector('#btn-done')
+    if (doneBtn) doneBtn.addEventListener('click', () => checkAndShowComplete())
   }
 
   function goTo(idx) {
@@ -118,7 +124,10 @@ export function createQuiz(questions, config, onComplete, checkTriggers, dimOrde
     btnBack.addEventListener('click', () => {
       btnBack.blur(); btnBack.classList.add('pressing')
       setTimeout(() => {
-        current = queue.length - 1
+        const mainCount = queue.filter(q => !q.id.startsWith('qh')).length
+        for (let i = mainCount - 1; i >= 0; i--) {
+          if (answers[queue[i].id] != null) { current = i; break }
+        }
         renderQuestion()
       }, 180)
     })
@@ -127,6 +136,26 @@ export function createQuiz(questions, config, onComplete, checkTriggers, dimOrde
     wrap.appendChild(btnGet)
     wrap.appendChild(btnBack)
     els.options.appendChild(wrap)
+  }
+
+  function checkAndShowComplete() {
+    if (countAnswered() < questions.main.length) return false
+    const allA = { ...answers, ...hiddenAnswers }
+    const scores = calcScoresLocal(allA, questions.main)
+    const levels = calcLevelsLocal(scores, thresholds, questionCounts)
+    const hiddenIds = checkTriggers(scores, levels, dimOrder)
+    const newHidden = hiddenIds
+      .filter((id) => !queue.some((q) => q.id === id))
+      .map((id) => questions.hidden.find((q) => q.id === id))
+      .filter(Boolean)
+    if (newHidden.length > 0) {
+      queue = [...queue, ...newHidden]
+      current = queue.length - newHidden.length
+      renderQuestion()
+      return true
+    }
+    showComplete()
+    return true
   }
 
   function selectOption(question, option) {
@@ -139,22 +168,8 @@ export function createQuiz(questions, config, onComplete, checkTriggers, dimOrde
     current++
 
     if (current >= queue.length) {
-      const allA = { ...answers, ...hiddenAnswers }
-      const scores = calcScoresLocal(allA, questions.main)
-      const levels = calcLevelsLocal(scores, thresholds, questionCounts)
-      const hiddenIds = checkTriggers(scores, levels, dimOrder)
-
-      const newHidden = hiddenIds
-        .filter((id) => !queue.some((q) => q.id === id))
-        .map((id) => questions.hidden.find((q) => q.id === id))
-        .filter(Boolean)
-
-      if (newHidden.length > 0) {
-        queue = [...queue, ...newHidden]
-        renderQuestion()
-        return
-      }
-
+      checkAndShowComplete()
+    } else if (countAnswered() >= questions.main.length && !queue[current].id.startsWith('qh')) {
       showComplete()
     } else {
       renderQuestion()

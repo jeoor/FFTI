@@ -74,9 +74,13 @@ body { font-family: var(--font); background: var(--bg); color: var(--ink); line-
 @media (hover: hover) { .qdot:hover { transform: translateY(-1px); border-color: var(--blue); color: var(--blue); } }
 .qdot.answered { background: var(--blue-l); border-color: var(--blue); color: var(--blue); }
 .qdot.active { background: var(--blue); border-color: var(--blue-d); color: #fff; }
+.qdot.disabled { opacity: 0.35; cursor: not-allowed; pointer-events: none; }
 .btn-nav-back { display: inline-flex; align-self: center; background: transparent; color: var(--blue); padding: 8px 20px; font-size: 0.82rem; border: 2px solid var(--blue); font-weight: 700; cursor: pointer; font-family: var(--font); transition: transform var(--motion-fast) ease, background var(--motion-fast) ease, border-color var(--motion-fast) ease, color var(--motion-fast) ease; touch-action: manipulation; user-select: none; outline: none; }
 @media (hover: hover) { .btn-nav-back:hover { background: var(--blue-l); transform: translateY(-1px); } }
 .btn-nav-back:active, .btn-nav-back.pressing { background: var(--blue) !important; color: #fff !important; border-color: var(--blue-d) !important; transform: scale(0.97); }
+.btn-nav-done { display: inline-flex; align-self: center; background: var(--blue); color: #fff; padding: 8px 20px; font-size: 0.82rem; border: 2px solid var(--blue-d); font-weight: 700; cursor: pointer; font-family: var(--font); transition: transform var(--motion-fast) ease, background var(--motion-fast) ease, border-color var(--motion-fast) ease, color var(--motion-fast) ease; touch-action: manipulation; user-select: none; outline: none; }
+@media (hover: hover) { .btn-nav-done:hover { background: var(--blue-d); transform: translateY(-1px); } }
+.btn-nav-done:active, .btn-nav-done.pressing { background: var(--blue-d) !important; transform: scale(0.97); }
 
 /* Quiz */
 .quiz-card { background: var(--card); border: 3px solid var(--border); padding: 28px 24px; box-shadow: var(--shadow-lg); }
