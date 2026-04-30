@@ -5,5 +5,5 @@
  */
 export function getAvatarUrl(code) {
   if (!code) return null
-  return `/ffti-avatars/${code}.svg`
+  return `./ffti-avatars/${code}.svg`
 }
