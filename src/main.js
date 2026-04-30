@@ -95,6 +95,12 @@ async function init() {
     quiz.start()
     setTimeout(() => { btnRestart.classList.remove('pressing'); showPage('quiz') }, 150)
   })
+
+  const btnHome = document.getElementById('btn-home')
+  btnHome.addEventListener('click', () => {
+    btnHome.classList.add('pressing')
+    setTimeout(() => { btnHome.classList.remove('pressing'); showPage('intro') }, 150)
+  })
 }
 
 init()
