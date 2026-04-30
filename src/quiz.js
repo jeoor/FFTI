@@ -14,6 +14,7 @@ export function createQuiz(questions, config, onComplete, checkTriggers, dimOrde
   let current = 0
   let answers = {}
   let hiddenAnswers = {}
+  let selecting = false
 
   const els = {
     fill: document.getElementById('progress-fill'),
@@ -24,10 +25,16 @@ export function createQuiz(questions, config, onComplete, checkTriggers, dimOrde
     nav: document.getElementById('quiz-nav'),
   }
 
+  function countAnswered() {
+    const mainIds = questions.main.map(q => q.id)
+    return mainIds.filter(id => answers[id] != null).length
+  }
+
   function updateProgress() {
-    const pct = (current / queue.length) * 100
-    els.fill.style.width = pct + '%'
-    els.text.textContent = `${current} / ${queue.length}`
+    const total = questions.main.length
+    const answered = countAnswered()
+    els.fill.style.width = (answered / total) * 100 + '%'
+    els.text.textContent = `已答 ${answered} / ${total}`
   }
 
   function renderQuestion() {
@@ -37,12 +44,18 @@ export function createQuiz(questions, config, onComplete, checkTriggers, dimOrde
     els.qText.textContent = q.text
     els.options.innerHTML = ''
     const savedVal = isHidden ? hiddenAnswers[q.id] : answers[q.id]
+    selecting = false
     q.options.forEach((opt) => {
       const btn = document.createElement('button'); btn.type = 'button'
       btn.className = 'btn btn-option'
       btn.textContent = opt.label
       if (savedVal != null && opt.value === savedVal) btn.classList.add('selected')
-      btn.addEventListener('click', () => { btn.blur(); btn.classList.add('pressing'); setTimeout(() => selectOption(q, opt), 180) })
+      btn.addEventListener('click', () => {
+        if (selecting) return
+        selecting = true
+        btn.blur(); btn.classList.add('pressing')
+        setTimeout(() => selectOption(q, opt), 180)
+      })
       els.options.appendChild(btn)
     })
     updateProgress()
@@ -74,7 +87,46 @@ export function createQuiz(questions, config, onComplete, checkTriggers, dimOrde
   }
 
   function goBack() {
-    if (current > 0) goTo(current - 1)
+    if (current >= queue.length) {
+      current = queue.length - 1
+      renderQuestion()
+    } else if (current > 0) {
+      goTo(current - 1)
+    }
+  }
+
+  function showComplete() {
+    els.qNum.textContent = '全部完成'
+    els.qText.textContent = '你已经答完了所有题目，准备好获取你的发疯人格了吗？'
+    els.options.innerHTML = ''
+    els.nav.innerHTML = ''
+    const total = questions.main.length
+    els.fill.style.width = '100%'
+    els.text.textContent = `已答 ${total} / ${total}`
+    const btnGet = document.createElement('button')
+    btnGet.type = 'button'
+    btnGet.className = 'btn btn-primary'
+    btnGet.innerHTML = '<span>获取人格</span><span class="btn-arrow">→</span>'
+    btnGet.addEventListener('click', () => {
+      btnGet.blur(); btnGet.classList.add('pressing')
+      setTimeout(() => onComplete(answers, hiddenAnswers), 180)
+    })
+    const btnBack = document.createElement('button')
+    btnBack.type = 'button'
+    btnBack.className = 'btn btn-outline'
+    btnBack.textContent = '我再想想'
+    btnBack.addEventListener('click', () => {
+      btnBack.blur(); btnBack.classList.add('pressing')
+      setTimeout(() => {
+        current = queue.length - 1
+        renderQuestion()
+      }, 180)
+    })
+    const wrap = document.createElement('div')
+    wrap.className = 'result-actions'
+    wrap.appendChild(btnGet)
+    wrap.appendChild(btnBack)
+    els.options.appendChild(wrap)
   }
 
   function selectOption(question, option) {
@@ -87,7 +139,6 @@ export function createQuiz(questions, config, onComplete, checkTriggers, dimOrde
     current++
 
     if (current >= queue.length) {
-      // 当前队列答完，检查是否需要插入隐藏题
       const allA = { ...answers, ...hiddenAnswers }
       const scores = calcScoresLocal(allA, questions.main)
       const levels = calcLevelsLocal(scores, thresholds, questionCounts)
@@ -104,7 +155,7 @@ export function createQuiz(questions, config, onComplete, checkTriggers, dimOrde
         return
       }
 
-      onComplete(answers, hiddenAnswers)
+      showComplete()
     } else {
       renderQuestion()
     }
@@ -114,6 +165,7 @@ export function createQuiz(questions, config, onComplete, checkTriggers, dimOrde
     current = 0
     answers = {}
     hiddenAnswers = {}
+    selecting = false
     queue = shuffle([...questions.main])
     renderQuestion()
   }
