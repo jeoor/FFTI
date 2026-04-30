@@ -77,7 +77,8 @@ export function createQuiz(questions, config, onComplete, checkTriggers, dimOrde
     const allDone = countAnswered() >= questions.main.length && !isOnHidden
     const doneHtml = allDone ? '<button type="button" class="btn btn-nav btn-nav-done" id="btn-done">完成测试 →</button>' : ''
     const backHtml = current > 0 ? '<button type="button" class="btn btn-nav btn-nav-back" id="btn-back">← 上一题</button>' : ''
-    els.nav.innerHTML = `<div class="nav-dots">${html}</div>${doneHtml}${backHtml}`
+    const actionsHtml = (doneHtml || backHtml) ? `<div class="quiz-actions">${backHtml}${doneHtml}</div>` : ''
+    els.nav.innerHTML = `<div class="nav-dots">${html}</div>${actionsHtml}`
     els.nav.querySelectorAll('.qdot:not([disabled])').forEach(dot => {
       dot.addEventListener('click', () => goTo(Number(dot.dataset.idx)))
     })

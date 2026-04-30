@@ -1,4 +1,5 @@
 import { getAvatarUrl } from './avatar.js'
+import { setLabelAnchor } from './utils.js'
 
 /**
  * FFTI share image generator
@@ -74,19 +75,6 @@ function clipCircle(ctx, x, y, r) {
   ctx.beginPath()
   ctx.arc(x, y, r, 0, Math.PI * 2)
   ctx.closePath()
-}
-
-function setLabelAnchor(ctx, angle) {
-  const cos = Math.cos(angle)
-  const sin = Math.sin(angle)
-
-  if (cos > 0.35) ctx.textAlign = 'left'
-  else if (cos < -0.35) ctx.textAlign = 'right'
-  else ctx.textAlign = 'center'
-
-  if (sin > 0.45) ctx.textBaseline = 'top'
-  else if (sin < -0.45) ctx.textBaseline = 'bottom'
-  else ctx.textBaseline = 'middle'
 }
 
 function wrap(ctx, text, maxW) {

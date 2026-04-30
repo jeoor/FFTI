@@ -101,6 +101,10 @@ async function init() {
     btnHome.classList.add('pressing')
     setTimeout(() => { btnHome.classList.remove('pressing'); showPage('intro') }, 150)
   })
+
+  document.getElementById('btn-quiz-home').addEventListener('click', () => {
+    window.location.reload()
+  })
 }
 
 init()

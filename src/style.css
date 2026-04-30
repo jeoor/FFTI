@@ -71,12 +71,15 @@ body { font-family: var(--font); background: var(--bg); color: var(--ink); line-
 /* Quiz Nav */
 .quiz-nav { margin-top: 16px; display: flex; flex-direction: column; gap: 12px; }
 .nav-dots { display: flex; flex-wrap: wrap; gap: 6px; justify-content: center; }
-.qdot { display: inline-flex; align-items: center; justify-content: center; width: 30px; height: 30px; font-size: 0.7rem; font-weight: 800; border: 2px solid var(--border); background: var(--card); color: var(--ink-3); cursor: pointer; transition: transform var(--motion-fast) ease, background var(--motion-fast) ease, border-color var(--motion-fast) ease, color var(--motion-fast) ease; padding: 0; }
+.quiz-actions { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+.qdot { display: inline-flex; align-items: center; justify-content: center; width: 30px; height: 30px; font-size: 0.7rem; font-weight: 800; border: 2px solid var(--border); background: var(--card); color: var(--ink-3); cursor: pointer; transition: transform var(--motion-fast) ease, background var(--motion-fast) ease, border-color var(--motion-fast) ease, color var(--motion-fast) ease; padding: 0; outline: none; }
+.qdot:focus-visible { outline: 3px solid var(--blue); outline-offset: 2px; }
 @media (hover: hover) { .qdot:hover { transform: translateY(-1px); border-color: var(--blue); color: var(--blue); } }
 .qdot.answered { background: var(--blue-l); border-color: var(--blue); color: var(--blue); }
 .qdot.active { background: var(--blue); border-color: var(--blue-d); color: #fff; }
 .qdot.disabled { opacity: 0.35; cursor: not-allowed; pointer-events: none; }
 .btn-nav { display: inline-flex; align-self: center; padding: 8px 20px; font-size: 0.82rem; font-weight: 700; cursor: pointer; font-family: var(--font); transition: transform var(--motion-fast) ease, background var(--motion-fast) ease, border-color var(--motion-fast) ease, color var(--motion-fast) ease; touch-action: manipulation; user-select: none; outline: none; }
+.btn-nav:focus-visible { outline: 3px solid var(--blue); outline-offset: 3px; }
 .btn-nav-back { background: transparent; color: var(--blue); border: 2px solid var(--blue); }
 @media (hover: hover) { .btn-nav-back:hover { background: var(--blue-l); transform: translateY(-1px); } }
 .btn-nav-back:active, .btn-nav-back.pressing { background: var(--blue) !important; color: #fff !important; border-color: var(--blue-d) !important; transform: scale(0.97); }
@@ -86,9 +89,12 @@ body { font-family: var(--font); background: var(--bg); color: var(--ink); line-
 
 /* Quiz */
 .quiz-card { background: var(--card); border: 3px solid var(--border); padding: 28px 24px; box-shadow: var(--shadow-lg); }
-.quiz-topbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
-.quiz-qnum { font-size: 0.8rem; font-weight: 800; color: var(--blue); background: var(--blue-l); padding: 4px 14px; border: 2px solid var(--blue); }
-.quiz-progress { font-size: 0.82rem; font-weight: 800; color: var(--ink-3); }
+.quiz-topbar { display: flex; align-items: center; margin-bottom: 12px; }
+.quiz-back-link { flex: 1; font-size: 0.82rem; font-weight: 800; color: var(--ink-3); background: none; border: none; padding: 0; cursor: pointer; font-family: var(--font); text-align: left; transition: color var(--motion-fast) ease; touch-action: manipulation; -webkit-tap-highlight-color: transparent; user-select: none; outline: none; }
+@media (hover: hover) { .quiz-back-link:hover { color: var(--blue); } }
+.quiz-back-link:focus-visible { outline: 3px solid var(--blue); outline-offset: 3px; }
+.quiz-qnum { flex: 1; text-align: center; font-size: 0.8rem; font-weight: 800; color: var(--blue); background: var(--blue-l); padding: 4px 14px; border: 2px solid var(--blue); }
+.quiz-progress { flex: 1; text-align: right; font-size: 0.82rem; font-weight: 800; color: var(--ink-3); }
 .progress-bar { height: 8px; background: var(--border); overflow: hidden; margin-bottom: 28px; }
 .progress-fill { height: 100%; background: var(--blue); transition: width var(--motion-slow) var(--ease-out); width: 0%; }
 .quiz-body { margin-bottom: 24px; }

@@ -30,7 +30,6 @@ export function renderResult(result, userLevels, dimOrder, dimDefs, config) {
     avatarEl.alt = `${primary.code} avatar`
     avatarEl.style.display = avatarUrl ? 'block' : 'none'
   }
-  document.getElementById('result-code').textContent = primary.code
   document.getElementById('result-name').textContent = primary.cn
 
   // 匹配度

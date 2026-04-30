@@ -1,17 +1,6 @@
+import { setLabelAnchor } from './utils.js'
+
 const LEVEL_NUM = { L: 1, M: 2, H: 3 }
-
-function setLabelAnchor(ctx, angle) {
-  const cos = Math.cos(angle)
-  const sin = Math.sin(angle)
-
-  if (cos > 0.35) ctx.textAlign = 'left'
-  else if (cos < -0.35) ctx.textAlign = 'right'
-  else ctx.textAlign = 'center'
-
-  if (sin > 0.45) ctx.textBaseline = 'top'
-  else if (sin < -0.45) ctx.textBaseline = 'bottom'
-  else ctx.textBaseline = 'middle'
-}
 
 /**
  * Draw radar chart for the result page.
@@ -43,18 +32,18 @@ export function drawRadar(canvas, userLevels, dimOrder, dimDefs) {
     ctx.beginPath()
     ctx.arc(cx, cy, r, 0, Math.PI * 2)
     ctx.fillStyle = level === 3
-      ? 'rgba(59, 108, 176, 0.08)'
+      ? 'rgba(41, 98, 194, 0.08)'
       : level === 2
-        ? 'rgba(59, 108, 176, 0.05)'
-        : 'rgba(59, 108, 176, 0.03)'
+        ? 'rgba(41, 98, 194, 0.05)'
+        : 'rgba(41, 98, 194, 0.03)'
     ctx.fill()
-    ctx.strokeStyle = 'rgba(59, 108, 176, 0.15)'
+    ctx.strokeStyle = 'rgba(41, 98, 194, 0.15)'
     ctx.lineWidth = 0.5
     ctx.stroke()
   }
 
   ctx.font = size < 340 ? '8.5px system-ui, sans-serif' : '9px system-ui, sans-serif'
-  ctx.fillStyle = '#6b7b8e'
+  ctx.fillStyle = '#7b8794'
   for (let i = 0; i < n; i++) {
     const angle = startAngle + i * angleStep
     const x = cx + Math.cos(angle) * maxR
@@ -63,7 +52,7 @@ export function drawRadar(canvas, userLevels, dimOrder, dimDefs) {
     ctx.beginPath()
     ctx.moveTo(cx, cy)
     ctx.lineTo(x, y)
-    ctx.strokeStyle = 'rgba(59, 108, 176, 0.12)'
+    ctx.strokeStyle = 'rgba(41, 98, 194, 0.12)'
     ctx.lineWidth = 0.5
     ctx.stroke()
 
@@ -91,9 +80,9 @@ export function drawRadar(canvas, userLevels, dimOrder, dimDefs) {
     else ctx.lineTo(x, y)
   }
   ctx.closePath()
-  ctx.fillStyle = 'rgba(59, 108, 176, 0.25)'
+  ctx.fillStyle = 'rgba(41, 98, 194, 0.25)'
   ctx.fill()
-  ctx.strokeStyle = 'rgba(59, 108, 176, 0.7)'
+  ctx.strokeStyle = 'rgba(41, 98, 194, 0.7)'
   ctx.lineWidth = 2
   ctx.stroke()
 
@@ -104,7 +93,7 @@ export function drawRadar(canvas, userLevels, dimOrder, dimDefs) {
     const y = cy + Math.sin(angle) * r
     ctx.beginPath()
     ctx.arc(x, y, 3, 0, Math.PI * 2)
-    ctx.fillStyle = '#3b6cb0'
+    ctx.fillStyle = '#2962c2'
     ctx.fill()
   }
 
