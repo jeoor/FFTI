@@ -46,14 +46,14 @@ const LEVEL_NUM = { L: 1, M: 2, H: 3 }
  * 解析人格类型的 pattern 字符串
  * "HHH-HMH-MHH-HHH-MHM" → ['H','H','H','H','M','H','M','H','H','H','H','H','M','H','M']
  */
-export function parsePattern(pattern) {
+function parsePattern(pattern) {
   return pattern.replace(/-/g, '').split('')
 }
 
 /**
  * 计算用户向量与类型 pattern 的曼哈顿距离
  */
-export function matchType(userLevels, dimOrder, pattern) {
+function matchType(userLevels, dimOrder, pattern) {
   const typeLevels = parsePattern(pattern)
   let distance = 0
   let exact = 0

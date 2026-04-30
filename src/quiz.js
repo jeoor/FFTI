@@ -38,7 +38,15 @@ export function createQuiz(questions, config, onComplete, checkTriggers, dimOrde
   function renderQuestion() {
     const q = queue[current]
     const isHidden = q.id.startsWith('qh')
-    if (els.qNum) els.qNum.textContent = isHidden ? '隐藏题' : `第 ${current + 1} 题`
+    if (els.qNum) {
+      if (isHidden) {
+        const hiddenInQueue = queue.filter(h => h.id.startsWith('qh'))
+        const hiddenIdx = hiddenInQueue.findIndex(h => h.id === q.id)
+        els.qNum.textContent = `隐藏题 ${hiddenIdx + 1} / ${hiddenInQueue.length}`
+      } else {
+        els.qNum.textContent = `第 ${current + 1} 题`
+      }
+    }
     els.qText.textContent = q.text
     els.options.innerHTML = ''
     const savedVal = isHidden ? hiddenAnswers[q.id] : answers[q.id]
@@ -65,9 +73,10 @@ export function createQuiz(questions, config, onComplete, checkTriggers, dimOrde
       const cls = isCurrent ? 'qdot active' : answered ? 'qdot answered' : 'qdot disabled'
       html += `<button type="button" class="${cls}" data-idx="${i}"${clickable ? '' : ' disabled'}>${i + 1}</button>`
     }
-    const allDone = countAnswered() >= questions.main.length
-    const doneHtml = allDone ? '<button type="button" class="btn btn-primary btn-nav-done" id="btn-done">完成测试 →</button>' : ''
-    const backHtml = current > 0 ? '<button type="button" class="btn btn-nav-back" id="btn-back">← 上一题</button>' : ''
+    const isOnHidden = queue[current] && queue[current].id.startsWith('qh')
+    const allDone = countAnswered() >= questions.main.length && !isOnHidden
+    const doneHtml = allDone ? '<button type="button" class="btn btn-nav btn-nav-done" id="btn-done">完成测试 →</button>' : ''
+    const backHtml = current > 0 ? '<button type="button" class="btn btn-nav btn-nav-back" id="btn-back">← 上一题</button>' : ''
     els.nav.innerHTML = `<div class="nav-dots">${html}</div>${doneHtml}${backHtml}`
     els.nav.querySelectorAll('.qdot:not([disabled])').forEach(dot => {
       dot.addEventListener('click', () => goTo(Number(dot.dataset.idx)))
@@ -142,7 +151,10 @@ export function createQuiz(questions, config, onComplete, checkTriggers, dimOrde
       .filter(Boolean)
     if (newHidden.length > 0) {
       queue = [...queue, ...newHidden]
-      current = queue.length - newHidden.length
+    }
+    const firstUnanswered = queue.findIndex((q) => q.id.startsWith('qh') && hiddenAnswers[q.id] == null)
+    if (firstUnanswered !== -1) {
+      current = firstUnanswered
       renderQuestion()
       return true
     }
