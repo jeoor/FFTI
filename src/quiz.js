@@ -21,6 +21,7 @@ export function createQuiz(questions, config, onComplete, checkTriggers, dimOrde
     qText: document.getElementById('question-text'),
     qNum: document.getElementById('question-number'),
     options: document.getElementById('options'),
+    nav: document.getElementById('quiz-nav'),
   }
 
   function updateProgress() {
@@ -35,14 +36,45 @@ export function createQuiz(questions, config, onComplete, checkTriggers, dimOrde
     if (els.qNum) els.qNum.textContent = isHidden ? '隐藏题' : `第 ${current + 1} 题`
     els.qText.textContent = q.text
     els.options.innerHTML = ''
+    const savedVal = isHidden ? hiddenAnswers[q.id] : answers[q.id]
     q.options.forEach((opt) => {
       const btn = document.createElement('button'); btn.type = 'button'
       btn.className = 'btn btn-option'
       btn.textContent = opt.label
+      if (savedVal != null && opt.value === savedVal) btn.classList.add('selected')
       btn.addEventListener('click', () => { btn.blur(); btn.classList.add('pressing'); setTimeout(() => selectOption(q, opt), 180) })
       els.options.appendChild(btn)
     })
     updateProgress()
+    renderNav()
+  }
+
+  function renderNav() {
+    if (!els.nav) return
+    const mainCount = queue.filter(q => !q.id.startsWith('qh')).length
+    let html = ''
+    for (let i = 0; i < mainCount; i++) {
+      const answered = answers[queue[i].id] != null
+      const cls = i === current ? 'qdot active' : answered ? 'qdot answered' : 'qdot'
+      html += `<button type="button" class="${cls}" data-idx="${i}">${i + 1}</button>`
+    }
+    const backHtml = current > 0 ? '<button type="button" class="btn btn-nav-back" id="btn-back">← 上一题</button>' : ''
+    els.nav.innerHTML = `<div class="nav-dots">${html}</div>${backHtml}`
+    els.nav.querySelectorAll('.qdot').forEach(dot => {
+      dot.addEventListener('click', () => goTo(Number(dot.dataset.idx)))
+    })
+    const backBtn = els.nav.querySelector('#btn-back')
+    if (backBtn) backBtn.addEventListener('click', goBack)
+  }
+
+  function goTo(idx) {
+    if (idx < 0 || idx >= queue.length || idx === current) return
+    current = idx
+    renderQuestion()
+  }
+
+  function goBack() {
+    if (current > 0) goTo(current - 1)
   }
 
   function selectOption(question, option) {
